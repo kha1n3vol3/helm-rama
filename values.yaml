@@ -8,15 +8,3 @@ image:
 zookeeper:
   servers:
     - "my-zookeeper-0.my-zookeeper-headless.zookeeper.svc.cluster.local"
-
-conductor:
-  host: "conductor"
-  ports:
-    http: 8888
-    rpc: 1973
-
-supervisor:
-  ports:
-    start: 2000
-    end: 3000
-  replicas: 3

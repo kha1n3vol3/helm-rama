@@ -38,8 +38,8 @@ spec:
           workingDir: /data/rama
           command: ["./rama", "conductor"]
           ports:
-            - containerPort: {{ .Values.conductor.ports.http }}
-            - containerPort: {{ .Values.conductor.ports.rpc }}
+            - containerPort: 8888
+            - containerPort: 1973
           volumeMounts:
             - name: rama-data
               mountPath: /data/rama
