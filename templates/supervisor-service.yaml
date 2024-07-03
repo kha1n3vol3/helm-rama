@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: supervisor
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: rama
+    role: supervisor
+  ports:
+    {{- range $port := until 1001 }}
+    - name: port-{{ add $port 3000 }}
+      port: {{ add $port 3000 }}
+      targetPort: {{ add $port 3000 }}
+    {{- end }}

@@ -9,8 +9,8 @@ spec:
     role: conductor
   ports:
     - name: http
-      port: {{ .Values.conductor.ports.http }}
-      targetPort: {{ .Values.conductor.ports.http }}
+      port: 8888
+      targetPort: 8888
     - name: rpc
-      port: {{ .Values.conductor.ports.rpc }}
-      targetPort: {{ .Values.conductor.ports.rpc }}
+      port: 1973
+      targetPort: 1973

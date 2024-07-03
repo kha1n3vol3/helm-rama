@@ -15,6 +15,16 @@ spec:
         app: rama
         role: supervisor
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - supervisor
+            topologyKey: "kubernetes.io/hostname"
       imagePullSecrets:
         - name: rpl-docker-secret
       initContainers:

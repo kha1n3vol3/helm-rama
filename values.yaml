@@ -1,4 +1,4 @@
-numSupervisors: 1
+numSupervisors: 2
 
 image:
   repository: nexus.redplanetlabs.com:8000/repository/docker/rama-amd64
