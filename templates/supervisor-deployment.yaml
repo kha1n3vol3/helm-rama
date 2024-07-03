@@ -9,6 +9,15 @@ spec:
       role: supervisor
   serviceName: "supervisor"
   replicas: {{ .Values.numSupervisors }}
+  volumeClaimTemplates:
+  - metadata:
+      name: rama-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: {{ .Values.supervisor.storageClassName}}
+      resources:
+        requests:
+          storage: {{ .Values.supervisor.storageAmount}}
   template:
     metadata:
       labels:
@@ -71,10 +80,7 @@ spec:
           volumeMounts:
             - name: rama-data
               mountPath: /data/rama
-      # TODO: <<<<>>>> update this to use PV / PVC
       volumes:
-        - name: rama-data
-          emptyDir: {}
         - name: config-volume
           configMap:
             name: rama-config

@@ -9,6 +9,15 @@ spec:
       role: conductor
   serviceName: "conductor"
   replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: rama-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: {{ .Values.conductor.storageClassName}}
+      resources:
+        requests:
+          storage: {{ .Values.conductor.storageAmount}}
   template:
     metadata:
       labels:
@@ -50,10 +59,7 @@ spec:
           volumeMounts:
             - name: rama-data
               mountPath: /data/rama
-      # TODO: <<<<>>>> update this to use PV / PVC
       volumes:
-        - name: rama-data
-          emptyDir: {}
         - name: config-volume
           configMap:
             name: rama-config

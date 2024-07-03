@@ -1,0 +1,3 @@
+- k8s should be configured to allow swap space to be used https://kubernetes.io/blog/2023/08/24/swap-linux-beta/
+- pods need to have double the memory as workers approximately
+  - heap + native memory

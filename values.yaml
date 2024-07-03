@@ -12,7 +12,11 @@ zookeeper:
 conductor:
   cpu: 1
   memory: "1Gi"
+  storageClassName: "local-storage"
+  storageAmount: "10Gi"
 
 supervisor:
   cpu: 1.5
   memory: "6Gi"
+  storageClassName: "local-storage"
+  storageAmount: "10Gi"
