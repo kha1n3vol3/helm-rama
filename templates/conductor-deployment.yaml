@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: conductor
+spec:
+  selector:
+    matchLabels:
+      app: rama
+      role: conductor
+  serviceName: "conductor"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rama
+        role: conductor
+    spec:
+      imagePullSecrets:
+        - name: rpl-docker-secret
+      initContainers:
+        {{ include "shared.initContainer.copyRelease" . | nindent 8 }}
+        - name: overwrite-config
+          image: busybox
+          command: ["/bin/sh"]
+          args:
+          - "-c"
+          - >-
+            cp /config/rama.yaml /data/rama/
+          volumeMounts:
+          - name: rama-data
+            mountPath: /data/rama
+          - name: config-volume
+            mountPath: /config
+      containers:
+        - name: conductor
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          workingDir: /data/rama
+          command: ["./rama", "conductor"]
+          ports:
+            - containerPort: {{ .Values.conductor.ports.http }}
+            - containerPort: {{ .Values.conductor.ports.rpc }}
+          volumeMounts:
+            - name: rama-data
+              mountPath: /data/rama
+      # TODO: <<<<>>>> update this to use PV / PVC
+      volumes:
+        - name: rama-data
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: rama-config

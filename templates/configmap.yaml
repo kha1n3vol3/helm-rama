@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rama-config
+data:
+  rama.yaml: |
+    zookeeper.servers:
+      {{- range $index, $server := .Values.zookeeper.servers }}
+      - {{ $server }}
+      {{- end }}
+    zookeeper.port: 2181
+    conductor.host: "conductor.{{ .Release.Namespace }}.svc.cluster.local"

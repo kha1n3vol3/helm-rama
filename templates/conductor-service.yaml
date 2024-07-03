@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: conductor
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: rama
+    role: conductor
+  ports:
+    - name: http
+      port: {{ .Values.conductor.ports.http }}
+      targetPort: {{ .Values.conductor.ports.http }}
+    - name: rpc
+      port: {{ .Values.conductor.ports.rpc }}
+      targetPort: {{ .Values.conductor.ports.rpc }}

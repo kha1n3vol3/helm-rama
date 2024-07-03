@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: supervisor
+spec:
+  selector:
+    matchLabels:
+      app: rama
+      role: supervisor
+  serviceName: "supervisor"
+  replicas: {{ .Values.numSupervisors }}
+  template:
+    metadata:
+      labels:
+        app: rama
+        role: supervisor
+    spec:
+      imagePullSecrets:
+        - name: rpl-docker-secret
+      initContainers:
+        {{ include "shared.initContainer.copyRelease" . | nindent 8 }}
+        - name: overwrite-config
+          image: busybox
+          command: ["/bin/sh"]
+          args:
+          - "-c"
+          - >-
+            cp /config/rama.yaml /data/rama/ &&
+            echo "supervisor.host: \"${POD_NAME}.supervisor.${POD_NAMESPACE}.svc.cluster.local\"" >> /data/rama/rama.yaml
+          volumeMounts:
+          - name: rama-data
+            mountPath: /data/rama
+          - name: config-volume
+            mountPath: /config
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      containers:
+        - name: supervisor
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          workingDir: /data/rama
+          command: ["./rama", "supervisor"]
+          ports:
+            {{- range $port := until 1001 }}
+            - containerPort: {{ add $port 3000 }}
+            {{- end }}
+          volumeMounts:
+            - name: rama-data
+              mountPath: /data/rama
+      # TODO: <<<<>>>> update this to use PV / PVC
+      volumes:
+        - name: rama-data
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: rama-config
