@@ -35,6 +35,13 @@ spec:
         - name: conductor
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          resources:
+            requests:
+              memory: "{{ .Values.conductor.memory }}"
+              cpu: "{{ .Values.conductor.cpu }}"
+            limits:
+              memory: "{{ .Values.conductor.memory }}"
+              cpu: "{{ .Values.conductor.cpu }}"
           workingDir: /data/rama
           command: ["./rama", "conductor"]
           ports:

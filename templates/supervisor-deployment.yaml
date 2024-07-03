@@ -55,6 +55,13 @@ spec:
         - name: supervisor
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          resources:
+            requests:
+              memory: "{{ .Values.supervisor.memory }}"
+              cpu: "{{ .Values.supervisor.cpu }}"
+            limits:
+              memory: "{{ .Values.supervisor.memory }}"
+              cpu: "{{ .Values.supervisor.cpu }}"
           workingDir: /data/rama
           command: ["./rama", "supervisor"]
           ports:

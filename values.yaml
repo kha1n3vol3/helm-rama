@@ -8,3 +8,11 @@ image:
 zookeeper:
   servers:
     - "my-zookeeper-0.my-zookeeper-headless.zookeeper.svc.cluster.local"
+
+conductor:
+  cpu: 1
+  memory: "1Gi"
+
+supervisor:
+  cpu: 1.5
+  memory: "6Gi"
