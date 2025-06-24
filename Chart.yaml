@@ -2,5 +2,5 @@ apiVersion: v2
 name: rama
 description: A Helm chart for deploying a Rama cluster
 type: application
-version: 0.5.0
+version: 0.6.0
 appVersion: 0.16.0
