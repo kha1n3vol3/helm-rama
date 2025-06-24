@@ -24,6 +24,8 @@ spec:
         app: rama
         role: supervisor
     spec:
+      nodeSelector:
+{{ .Values.nodeSelector | toYaml | indent 6 }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
