@@ -24,6 +24,8 @@ spec:
         app: rama
         role: conductor
     spec:
+      nodeSelector:
+{{ .Values.nodeSelector | toYaml | indent 6 }}
       imagePullSecrets:
         - name: rpl-docker-secret
       initContainers:
