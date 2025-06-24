@@ -1,7 +1,11 @@
 numSupervisors: 2
 
+# Node scheduling for ARM64 (Raspberry Pi5)
+nodeSelector:
+  kubernetes.io/arch: arm64
+
 image:
-  repository: nexus.redplanetlabs.com:8000/repository/docker/rama-amd64
+  repository: nexus.redplanetlabs.com:8000/repository/docker/rama-arm64
   pullPolicy: IfNotPresent
   tag: 0.16.0
 
