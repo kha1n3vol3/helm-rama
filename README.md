@@ -76,13 +76,27 @@ nodeSelector:
 ./scripts/verify_k3s.sh v1.20.0
 ```
 
+- **Configure kubectl**: Ensure Helm and kubectl can reach your k3s API server:
+
+```bash
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+```
+
+To make this permanent for your user (so you don't have to export every shell), copy the file:
+
+```bash
+mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $(id -u):$(id -g) ~/.kube/config
+```
+
 - **Deploy the chart**: Install the Rama Helm chart with ARM64 nodeSelector and k3s version gating (set to current or legacy version prefix):
 
 ```bash
 # Default (current version):
 helm install rama . \
   --set nodeSelector.kubernetes.io/arch=arm64 \
-  --set k3s.minVersion=$(k3s --version | awk '{print $3}')
+  --set k3s.minVersion=$(k3s --version | head -n1 | awk '{print $3}')
 
 # Or to test a legacy version:
 helm install rama . \

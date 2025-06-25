@@ -11,7 +11,7 @@ if ! command -v k3s >/dev/null 2>&1; then
 fi
 
 # Determine the installed k3s version
-INSTALLED_VERSION=$(k3s --version | awk '{print $3}')
+INSTALLED_VERSION=$(k3s --version | head -n1 | awk '{print $3}')
 echo "Detected k3s version: ${INSTALLED_VERSION}"
 
 # Determine required version prefix (default to current version if none provided)
