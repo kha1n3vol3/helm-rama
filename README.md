@@ -146,3 +146,14 @@ kubectl get pods -l app=rama -o wide
 ```bash
 watch -n 2 'free -h && swapon --show=NAME,SIZE,USED,PRIO'
 ```
+  
+- **Verify cluster health**: Ensure k3s nodes are Ready and the Rama release is running:
+
+```bash
+kubectl cluster-info
+kubectl get nodes
+kubectl get statefulsets
+kubectl get pods -l app=rama -o wide
+helm status rama
+```
+
