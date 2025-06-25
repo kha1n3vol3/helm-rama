@@ -4,7 +4,11 @@
 
 For details on the refactoring plan, prerequisites, and milestones, see [docs/REFRACTOR_PLAN.md](docs/REFRACTOR_PLAN.md).
 
-- Make a Docker image with python3, java, unzip, and the Rama release archive (e.g. rama-1.1.0.zip) at /home/rama/. See helpers/Dockerfile for a minimal example meeting these requirements (base image ubuntu:24.10 for ARM64).
+- Build a Docker image (ARM64/ubuntu:24.10) that includes python3, java, unzip, and the Rama release archive (v1.1.0) in `/home/rama/`, and adds a non-root user `rama`. See `helpers/Dockerfile` for a minimal example. To build:
+
+```bash
+docker build -t rama-arm64 -f helpers/Dockerfile .
+```
 - Configure k8s to allow swap space. When updating modules, Rama launches a new worker process for the new module instance alongside each existing worker and transitions responsibilities between them. So there's a temporary need for additional memory during this period, and configuring swap space ensures the pod won't run out of memory. See https://kubernetes.io/blog/2023/08/24/swap-linux-beta/
 - Zookeeper cluster must be launched separately (e.g. with bitnami zookeeper helm chart)
 - zookeeper.servers must be filled in values.yaml with list of all Zookeeper server names
@@ -33,22 +37,37 @@ sudo sed -i '/\/swapfile/d' /etc/fstab
 ```
 
 ## Kubernetes and k3s verification
-To verify your Raspberry Pi5 (ARM64) node is running Ubuntu 24.10 with k3s installed and meets a version requirement, run:
+To verify your Raspberry Pi 5 (ARM64) node is running Ubuntu 24.10 with k3s installed and meets a version requirement, run:
 
 ```bash
 # Default: verify against the current k3s version
 ./scripts/verify_k3s.sh
-# Or pass an older version prefix to simulate a legacy requirement
+# Or to test a legacy prefix:
 ./scripts/verify_k3s.sh v1.20.0
 ```
 
-Ensure pods are scheduled to ARM64 nodes by setting a nodeSelector:
+### Configure kubectl
 
 ```bash
-helm install rama . --set nodeSelector.kubernetes.io/arch=arm64
+# Copy k3s kubeconfig into your home directory (run once):
+mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $(id -u):$(id -g) ~/.kube/config
+# Point kubectl/helm to the new config:
+export KUBECONFIG=$HOME/.kube/config
 ```
 
-Or by setting in values.yaml:
+### Install the chart
+
+Run Helm as your regular user (not via sudo) so it picks up your kubeconfig:
+
+```bash
+helm install rama . \
+  --set nodeSelector."kubernetes\\.io/arch"=arm64 \
+  --set k3s.minVersion=$(k3s --version | head -n1 | awk '{print $3}')
+```
+
+Alternatively, set the nodeSelector in values.yaml:
 
 ```yaml
 nodeSelector:
@@ -88,19 +107,22 @@ To make this permanent for your user (so you don't have to export every shell), 
 mkdir -p ~/.kube
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 sudo chown $(id -u):$(id -g) ~/.kube/config
+# Update your KUBECONFIG to point to the new config file
+export KUBECONFIG=$HOME/.kube/config
 ```
 
+- **Run as non-root**: Ensure Helm runs as your normal user (so $KUBECONFIG is respected); do not prefix with sudo.
 - **Deploy the chart**: Install the Rama Helm chart with ARM64 nodeSelector and k3s version gating (set to current or legacy version prefix):
 
 ```bash
 # Default (current version):
 helm install rama . \
-  --set nodeSelector.kubernetes.io/arch=arm64 \
+  --set nodeSelector."kubernetes\\.io/arch"=arm64 \
   --set k3s.minVersion=$(k3s --version | head -n1 | awk '{print $3}')
 
 # Or to test a legacy version:
 helm install rama . \
-  --set nodeSelector.kubernetes.io/arch=arm64 \
+  --set nodeSelector."kubernetes\\.io/arch"=arm64 \
   --set k3s.minVersion=v1.20.0
 ```
 

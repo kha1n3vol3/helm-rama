@@ -9,6 +9,13 @@ RUN apt-get update && \
         python3 && \
     ln -s /usr/bin/python3 /usr/bin/python
 
-RUN mkdir -p /home/rama
+RUN useradd --create-home --shell /bin/bash rama
 
-COPY rama-<version>.zip /home/rama/
+# Download the Rama release archive into the rama user's home directory
+USER rama
+WORKDIR /home/rama
+RUN curl -LsS https://redplanetlabs.s3.us-west-2.amazonaws.com/rama/rama-1.1.0.zip \
+      -o rama-1.1.0.zip
+
+# Switch back to root for any further instructions
+USER root
