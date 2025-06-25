@@ -82,7 +82,7 @@ nodeSelector:
 # Default (current version):
 helm install rama . \
   --set nodeSelector.kubernetes.io/arch=arm64 \
-  --set k3s.minVersion=$(k3s --version | awk '{print $2}')
+  --set k3s.minVersion=$(k3s --version | awk '{print $3}')
 
 # Or to test a legacy version:
 helm install rama . \
