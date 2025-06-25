@@ -33,11 +33,16 @@ sudo sed -i '/\/swapfile/d' /etc/fstab
 ```
 
 ## Kubernetes and k3s verification
-- Verify that your Raspberry Pi5 (ARM64) node is running Ubuntu 24.10 with k3s installed:
-  ```bash
-  ./scripts/verify_k3s.sh [REQUIRED_VERSION]
-  ```
-- Ensure pods are scheduled to ARM64 nodes by setting a nodeSelector:
+To verify your Raspberry Pi5 (ARM64) node is running Ubuntu 24.10 with k3s installed and meets a version requirement, run:
+
+```bash
+# Default: verify against the current k3s version
+./scripts/verify_k3s.sh
+# Or pass an older version prefix to simulate a legacy requirement
+./scripts/verify_k3s.sh v1.20.0
+```
+
+Ensure pods are scheduled to ARM64 nodes by setting a nodeSelector:
 
 ```bash
 helm install rama . --set nodeSelector.kubernetes.io/arch=arm64
@@ -61,18 +66,28 @@ nodeSelector:
 ./scripts/pi5-setup.sh
 ```
 
-- **Verify k3s installation**: Check that k3s is installed and meets the minimum version requirement:
+- **Verify k3s installation**: Ensure k3s is installed and meets a version requirement (defaults to the current version; pass a legacy prefix to test an older requirement):
 
 ```bash
-./scripts/verify_k3s.sh ${REQUIRED_VERSION}
+# Default (current version):
+./scripts/verify_k3s.sh
+
+# Or to test a legacy version:
+./scripts/verify_k3s.sh v1.20.0
 ```
 
-- **Deploy the chart**: Install the Rama Helm chart with ARM64 nodeSelector and k3s version gating:
+- **Deploy the chart**: Install the Rama Helm chart with ARM64 nodeSelector and k3s version gating (set to current or legacy version prefix):
 
 ```bash
+# Default (current version):
 helm install rama . \
   --set nodeSelector.kubernetes.io/arch=arm64 \
-  --set k3s.minVersion=${REQUIRED_VERSION}
+  --set k3s.minVersion=$(k3s --version | awk '{print $2}')
+
+# Or to test a legacy version:
+helm install rama . \
+  --set nodeSelector.kubernetes.io/arch=arm64 \
+  --set k3s.minVersion=v1.20.0
 ```
 
 - **Confirm scheduling**: Ensure pods are running on ARM64 nodes:
