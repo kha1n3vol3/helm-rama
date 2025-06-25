@@ -70,9 +70,10 @@ export KUBECONFIG=$HOME/.kube/config
 Run Helm as your regular user (not via sudo) so it picks up your kubeconfig:
 
 ```bash
-helm install rama . \
+# Note: override k3s.minVersion to a valid version string (default "1.x.y" is a placeholder).
+helm upgrade --install rama . \
   --set nodeSelector."kubernetes\\.io/arch"=arm64 \
-  --set k3s.minVersion=$(k3s --version | head -n1 | awk '{print $3}')
+  --set k3s.minVersion="$(k3s --version | head -n1 | awk '{print $3}')"
 ```
 
 Alternatively, set the nodeSelector in values.yaml:
