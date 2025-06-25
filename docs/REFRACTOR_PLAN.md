@@ -1,3 +1,6 @@
+Here’s a more structured, detailed refactoring plan that incorporates your Pi5-specific setup (pi5.md) and adds clearer deliverables, prerequisites, and milestones.
+
+—  
 # Project Refactoring Plan
 
 ## 1. Overview  

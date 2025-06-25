@@ -4,6 +4,10 @@ numSupervisors: 2
 nodeSelector:
   kubernetes.io/arch: arm64
 
+# Minimum k3s version prefix required for chart deployment
+k3s:
+  minVersion: "1.x.y"
+
 image:
   repository: nexus.redplanetlabs.com:8000/repository/docker/rama-arm64
   pullPolicy: IfNotPresent

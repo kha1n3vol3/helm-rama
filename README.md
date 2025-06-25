@@ -1,5 +1,9 @@
 # Instructions
 
+## Refactoring Plan
+
+For details on the refactoring plan, prerequisites, and milestones, see [docs/REFRACTOR_PLAN.md](docs/REFRACTOR_PLAN.md).
+
 - Make a Docker image with python3, java, unzip, and the Rama release archive (e.g. rama-1.1.0.zip) at /home/rama/. See helpers/Dockerfile for a minimal example meeting these requirements (base image ubuntu:24.10 for ARM64).
 - Configure k8s to allow swap space. When updating modules, Rama launches a new worker process for the new module instance alongside each existing worker and transitions responsibilities between them. So there's a temporary need for additional memory during this period, and configuring swap space ensures the pod won't run out of memory. See https://kubernetes.io/blog/2023/08/24/swap-linux-beta/
 - Zookeeper cluster must be launched separately (e.g. with bitnami zookeeper helm chart)
@@ -48,3 +52,37 @@ nodeSelector:
 
 ## Default image repository
 - The chart defaults to the ARM64 image variant (`rama-arm64`) in values.yaml. Adjust `.Values.image.repository` if using a different registry or architecture.
+
+## Action Items for K3s Deployment on ARM64
+
+- **Prepare Pi5 nodes**: Run the Pi5 setup script to configure NVMe swap, zram, and kernel tunables:
+
+```bash
+./scripts/pi5-setup.sh
+```
+
+- **Verify k3s installation**: Check that k3s is installed and meets the minimum version requirement:
+
+```bash
+./scripts/verify_k3s.sh ${REQUIRED_VERSION}
+```
+
+- **Deploy the chart**: Install the Rama Helm chart with ARM64 nodeSelector and k3s version gating:
+
+```bash
+helm install rama . \
+  --set nodeSelector.kubernetes.io/arch=arm64 \
+  --set k3s.minVersion=${REQUIRED_VERSION}
+```
+
+- **Confirm scheduling**: Ensure pods are running on ARM64 nodes:
+
+```bash
+kubectl get pods -l app=rama -o wide
+```
+
+- **Monitor resources**: Watch memory and swap usage on nodes:
+
+```bash
+watch -n 2 'free -h && swapon --show=NAME,SIZE,USED,PRIO'
+```

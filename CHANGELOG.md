@@ -15,4 +15,4 @@ All notable changes to this project will be documented in this file.
 ### Added
 - `scripts/verify_k3s.sh`: script to verify k3s installation and optional version requirement
 - `CHANGELOG.md` to track project changes
-- `plan.md` outlining refactoring plan
+- `docs/REFRACTOR_PLAN.md` outlining refactoring plan

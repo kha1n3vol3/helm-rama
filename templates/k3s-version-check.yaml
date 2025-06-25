@@ -1,0 +1,5 @@
+{{/*
+This template enforces a minimum k3s version before any resources are rendered.
+It triggers a render-time failure if the cluster's k3s version is below the required prefix.
+*/}}
+{{ include "assert.k3sVersion" . }}
