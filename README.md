@@ -4,10 +4,18 @@
 
 For details on the refactoring plan, prerequisites, and milestones, see [docs/REFRACTOR_PLAN.md](docs/REFRACTOR_PLAN.md).
 
-- Build a Docker image (ARM64/ubuntu:24.10) that includes python3, java, unzip, and the Rama release archive (v1.1.0) in `/home/rama/`, and adds a non-root user `rama`. See `helpers/Dockerfile` for a minimal example. To build:
+- Build a container image (ARM64/ubuntu:24.10) that includes python3, java, unzip, and the Rama release archive (v1.1.0) in `/home/rama/`, and adds a non-root user `rama`. See `helpers/Dockerfile` for a minimal example. You can use Docker or Podman. On Ubuntu, install Podman with:
+
+```bash
+sudo apt-get update && sudo apt-get install -y podman
+```
+
+To build with Docker or Podman:
 
 ```bash
 docker build -t rama-arm64 -f helpers/Dockerfile .
+# or
+podman build -t rama-arm64 -f helpers/Dockerfile .
 ```
 - Configure k8s to allow swap space. When updating modules, Rama launches a new worker process for the new module instance alongside each existing worker and transitions responsibilities between them. So there's a temporary need for additional memory during this period, and configuring swap space ensures the pod won't run out of memory. See https://kubernetes.io/blog/2023/08/24/swap-linux-beta/
 - Zookeeper cluster must be launched separately (e.g. with bitnami zookeeper helm chart)
