@@ -24,8 +24,10 @@ spec:
         app: rama
         role: supervisor
     spec:
+{{- with .Values.nodeSelector }}
       nodeSelector:
-{{ .Values.nodeSelector | toYaml | indent 6 }}
+{{ toYaml . | indent 8 }}
+{{- end }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
