@@ -157,3 +157,43 @@ kubectl get pods -l app=rama -o wide
 helm status rama
 ```
 
+### Expected successful deployment
+
+A healthy Rama deployment should show your control plane up, nodes Ready, StatefulSets fully rolled out, pods in Running state, and the release marked deployed:
+
+```bash
+# kubectl get nodes
+# NAME   STATUS   ROLES                  AGE   VERSION
+# pi5    Ready    control-plane,master   25h   v1.32.5+k3s1
+
+# kubectl get statefulsets
+# conductor   1/1     1         1           <age>
+# supervisor  2/2     2         2           <age>
+
+# kubectl get pods -l app=rama -o wide
+# conductor-0    1/1     Running   0          <age>  <ip>  <node>
+# supervisor-0   1/1     Running   0          <age>  <ip>  <node>
+
+# helm status rama
+# NAME: rama
+# STATUS: deployed
+# REVISION: 2
+# TEST SUITE: None
+```
+
+### Troubleshooting Pending pods
+
+If your pods remain in `Pending` (e.g. `0/1` READY), inspect scheduling and storage issues:
+
+```bash
+kubectl describe pod <pod-name>
+kubectl get pvc
+kubectl describe pvc <pvc-name>
+kubectl get events
+```
+
+Common causes include:
+- PersistentVolumeClaims not bound: verify your storageClass and PV provisioning.
+- nodeSelector mismatch: ensure the `kubernetes.io/arch=arm64` label exists on your nodes.
+- Insufficient resources: confirm the node has enough CPU, memory, and storage for the pods.
+
